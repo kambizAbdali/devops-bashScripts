@@ -1,0 +1,28 @@
+#!/usr/bin/bash
+
+if [[ $# -ne 2 ]]; then    
+   echo "Usage: <Source_Dir> <BACKUP_NAME>"
+   echo "EXAMPLE: $0 /opt/dir/to/backup  /opt/backups/mybackup.tar.gz"
+   exit 1
+fi 
+
+if [[ ! -d "$1" ]]; then  
+    echo "ERROR: <Source_Dir> isn't a directory format."
+    exit 1
+fi
+
+if [[ "$2" != *.tar.gz ]];then
+ echo "ERROR: <BACKUP_NAME> should be somthing with tar.gz extention."
+ exit 1
+fi
+
+ 
+tar -zcf  $2  $1 &> /dev/null
+
+if [[ ! -f "$2" ]]; then
+   echo "ERROR: Coudn't create the backup file."
+   exit 1
+fi 
+ 
+ echo "Info: Backup is created successfully."
+ 
