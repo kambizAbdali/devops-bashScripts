@@ -1,6 +1,7 @@
 #!/usr/bin/bash
 
-# https://github.com/kambizAbdali/devops-bashScripts/02- backup-script-with-dateTime
+# https://github.com/kambizAbdali/devops-bashScripts/tree/main/scripts/02-%20backup-script-with-dateTime
+   
 
 VERBUS_OUTPUT=0
 ADD_DATE_TO_FILENAME=""
