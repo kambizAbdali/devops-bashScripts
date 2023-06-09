@@ -1,0 +1,102 @@
+#!/usr/bin/bash
+
+# https://github.com/kambizAbdali/devops-bashScripts/02- backup-script-with-dateTime
+
+VERBUS_OUTPUT=0
+ADD_DATE_TO_FILENAME=""
+
+usage()
+ {
+	     cat <<EOL
+Usage: $0 [OPTIONS] <source_dir>  <backup_name>
+Options:
+    -v              :Verbuse mode
+    --date <format> : Add date to backup filename.
+                     Supported formats: time, date, datetime, timestamp 
+EOL
+
+ }
+
+if [[ $# -lt 2 ]]; then    
+   usage
+   exit 1
+fi 
+
+# input example :  ./backup  v  opt/dir/to/backup   /mybackup.tar.gz"
+ 
+# $0=./backup  $1=v    and $2= opt/dir/to/backup  and $3= /mybackup.tar.gz"
+
+while true; do
+   case $1 in     #[options]=$1 
+   
+     -v)
+     
+       VERBUS_OUTPUT=1 
+       shift 1   # $1=/opt/dir/to/backup   and $2= /mybackup.tar.gz"
+      ;;
+      --date)
+          case $2 in
+               time)
+                   ADD_DATE_TO_FILENAME=$(date +%H%M%S)
+                   ;;
+               date)
+                   ADD_DATE_TO_FILENAME=$(date +%Y%m%d) # for daily backup
+                   ;;  
+               datetime)
+                   ADD_DATE_TO_FILENAME=$(date +%Y%m%d-%H%M%S)
+                   ;;  
+               timestampe)
+                   ADD_DATE_TO_FILENAME=$(date +%s)
+                   ;;
+               *)
+                   echo "ERROR: Unsupported date format."
+                   exit 1
+                   ;;
+           esac
+           shift 2
+           ;;
+       *)
+           break
+           ;;
+     esac 
+done
+
+if [[ $# -ne 2 ]]; then
+   usage
+   exit 1;
+fi
+
+echo $VERBUS
+
+if [[ ! -d "$1" ]]; then  
+    echo "ERROR: <Source_Dir> isn't a directory format."
+    exit 1
+fi
+
+
+if [[ "$2" != *.tar.gz ]];then
+ echo "ERROR: <BACKUP_NAME> should be somthing with tar.gz extention."
+ exit 1
+fi
+
+if [[ $VERBUS_OUTPUT -eq 0 ]];then
+    if [[ $ADD_DATE_TO_FILENAME == "" ]];then
+       tar -zcf $2 $1 &> /dev/null
+    else
+       tar -zcf "${ADD_DATE_TO_FILENAME}-${2}"  $1  &> /dev/null    
+    fi
+else
+    if [[ $ADD_DATE_TO_FILENAME == "" ]]; then
+       tar -zvcf $2 $1 
+    else 
+       tar -zcvf "${ADD_DATE_TO_FILENAME}-${2}"  $1 
+    fi
+fi
+
+if [[ ! -f "$2" ]]; then
+   echo "ERROR: Could not create the backup file."
+   exit 1
+fi
+
+echo "INFO: Backup is created successfully."
+    
